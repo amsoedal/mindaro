@@ -101,7 +101,7 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: stats-api
-        image: azdspublic/todo-app-stats-api
+        image: ansoedal/stats-api-oc
 ---
 apiVersion: v1
 kind: Service
@@ -111,8 +111,8 @@ spec:
   selector:
     name: stats-api
   ports:
-  - port: 80
-    targetPort: 80
+  - port: 8080
+    targetPort: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -131,7 +131,16 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: todos-db
-        image: mongo:4
+        image: centos/mongodb-34-centos7
+        env:
+        - name: MONGODB_USER
+          value: "user1"
+        - name: MONGODB_PASSWORD
+          value: "passw0rd"
+        - name: MONGODB_DATABASE
+          value: "todoapp"
+        - name: MONGODB_ADMIN_PASSWORD
+          value: "password123"
 ---
 apiVersion: v1
 kind: Service
@@ -161,7 +170,7 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: frontend
-        image: azdspublic/todo-app-frontend
+        image: ansoedal/frontend-oc
         env:
         - name: STATS_QUEUE_URI
           value: amqp://stats-queue
@@ -175,8 +184,8 @@ spec:
   selector:
     name: frontend
   ports:
-  - port: 80
-    targetPort: 80
+  - port: 8080
+    targetPort: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -195,7 +204,7 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: database-api
-        image: azdspublic/todo-app-database-api
+        image: ansoedal/database-oc
         env:
         - name: MONGO_CONNECTION_STRING
           value: mongodb://todos-db
@@ -208,5 +217,5 @@ spec:
   selector:
     name: database-api
   ports:
-  - port: 80
-    targetPort: 80
+  - port: 8080
+    targetPort: 8080

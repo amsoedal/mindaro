@@ -7,6 +7,8 @@ ENV PORT 8080
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://*:8080
 
+RUN mkdir /app
+RUN mkdir /app/.next
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
